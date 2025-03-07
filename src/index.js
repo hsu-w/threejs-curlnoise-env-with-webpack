@@ -56,6 +56,12 @@ const material = new THREE.ShaderMaterial({
     uLocalPoint: {
       value: new THREE.Vector3(0, 0, 0),
     },
+    uRate: {
+      value: 2.0,
+    },
+    uMaxDist: {
+      value: 0.5,
+    },
   }
 });
 
@@ -124,8 +130,9 @@ window.addEventListener("mousemove", (event) => {
     // console.log("交差位置:", intersects[0].point);
         
     // 3D座標をmeshのローカル座標系に変換
-    const localPoint = mesh.worldToLocal(intersects[0].point.clone());
-
+    let localPoint = mesh.worldToLocal(intersects[0].point.clone());
+    localPoint.x = localPoint.x + 0.5;
+    localPoint.y = localPoint.y + 0.5;
     // ローカル座標を使用して2D座標を計算
     const canvas_x = (localPoint.x * 10 + sizes.width * window.devicePixelRatio / 2);
     const canvas_y = -(localPoint.y * 10 - sizes.height * window.devicePixelRatio / 2);
@@ -136,8 +143,22 @@ window.addEventListener("mousemove", (event) => {
 });
 
 
-
-
+const gui = new dat.GUI({
+  width: 300
+});
+//デバッグ
+gui
+  .add(material.uniforms.uRate, "value")
+  .min(0.001)
+  .max(5)
+  .step(0.001)
+  .name("uRate");
+gui
+  .add(material.uniforms.uMaxDist, "value")
+  .min(0.1)
+  .max(0.8)
+  .step(0.1)
+  .name("uMaxDist");
 
 
 
