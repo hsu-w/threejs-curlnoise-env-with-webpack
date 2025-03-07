@@ -18,8 +18,8 @@ void main() {
 
     vec2 dotPos = uLocalPoint.xy * 10.0;
     float dist = length(uv - dotPos);
-    if (dist < 0.05) {  // 点のサイズ（半径0.05）
-        color = vec3(1.0, 0.0, 0.0);  // 赤
+    if (dist < 0.1) {  // 点のサイズ（半径0.05）
+        color = vec3(1.0, 1.0, 0.0);  // 赤
         gl_FragColor = vec4(color, 1.0);  // 点の色を設定
     } else {
         vec4 textureColor = texture2D(uTexture, vTexcoord);
