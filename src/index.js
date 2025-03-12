@@ -223,7 +223,7 @@ void main() {
     vec2 velocity = texture(velocityTexture, uv).xy; // WebGL2 では texture() を使う
 
     // 速度を 0 ~ 1 にマッピング
-    vec3 color = vec3(velocity * 0.5 + 0.5, 0.0);
+    vec3 color = vec3(velocity * 0.5 + 0.5, 1.0);
 
     gl_FragColor = vec4(color, 1.0); // WebGL2 では fragColor に出力
 }
