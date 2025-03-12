@@ -106,22 +106,7 @@ cursorPre.x = 0;
 cursorPre.y = 0;
 
 
-const gui = new dat.GUI({
-  width: 300
-});
-//デバッグ
-gui
-  .add(material.uniforms.uRate, "value")
-  .min(0.001)
-  .max(5)
-  .step(0.001)
-  .name("uRate");
-gui
-  .add(material.uniforms.uMaxDist, "value")
-  .min(0.1)
-  .max(0.8)
-  .step(0.1)
-  .name("uMaxDist");
+
 
 
 
@@ -165,19 +150,19 @@ let velocityA = new THREE.WebGLRenderTarget(SIM_RESOLUTION, SIM_RESOLUTION, {
 let velocityB = velocityA.clone(); // ダブルバッファ
 
 
-
-
 const velocityMaterial = new THREE.ShaderMaterial({
   fragmentShader: `precision highp float;
   uniform sampler2D velocityTexture;
   uniform vec2 mouse;
   uniform float dt;
   uniform vec2 resolution;
+  uniform float uForce;
+  uniform float uDecade;
   void main() {
     vec2 uv = gl_FragCoord.xy / resolution;
     vec2 velocity =  texture2D(velocityTexture,uv).xy;
     float dist = length(uv - mouse);
-    vec2 force = 20.0 * normalize(uv - mouse) * exp(-dist * 20.0);
+    vec2 force = uForce * normalize(uv - mouse) * exp(-dist * uDecade);
     velocity += force * dt;
     gl_FragColor = vec4(velocity, 0.0, 1.0);
   }`,
@@ -186,6 +171,8 @@ const velocityMaterial = new THREE.ShaderMaterial({
     mouse: { value: new THREE.Vector2(-1.0, -1.0) },
     dt: { value: 0.016 },
     resolution: { value: new THREE.Vector2(SIM_RESOLUTION, SIM_RESOLUTION) },
+    uForce: { value: 20.0 },
+    uDecade: { value: 30.0 },
   },
 });
 
@@ -308,7 +295,7 @@ window.addEventListener("mousemove", (event) => {
     const canvas_y = -(localPoint.y * 10 - sizes.height * window.devicePixelRatio / 2);
     material.uniforms.uLocalPoint.value = localPoint;
     velocityMaterial.uniforms.mouse.value.set(localPoint.x, localPoint.y);
-    console.log(localPoint.x,localPoint.y);
+    // console.log(localPoint.x,localPoint.y);
   }
 
 });
@@ -316,6 +303,22 @@ window.addEventListener("mousemove", (event) => {
 
 
 
+const gui = new dat.GUI({
+  width: 300
+});
+//デバッグ
+gui
+  .add(velocityMaterial.uniforms.uForce, "value")
+  .min(1.0)
+  .max(20.0)
+  .step(0.001)
+  .name("uForce");
+gui
+  .add(velocityMaterial.uniforms.uDecade, "value")
+  .min(10.0)
+  .max(50.0)
+  .step(0.01)
+  .name("uDecade");
 
 
 
